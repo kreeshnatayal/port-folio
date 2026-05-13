@@ -1,0 +1,466 @@
+:root {
+    --bg-color: #000000;
+    --text-color: #00ff00;
+    --accent-color: #ff0000;
+    --secondary-color: #ffb6c1;
+    --panel-color: #1a1a1a;
+    --border-color: #333333;
+    --scanline-overlay: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.1) 2px,
+        rgba(0, 0, 0, 0.1) 4px
+    );
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow-x: hidden;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100' height='100' fill='none'/%3E%3Cpath d='M10 0 L90 0' stroke='%2300ff00' stroke-width='0.5'/%3E%3Cpath d='M10 10 L90 10' stroke='%2300ff00' stroke-width='0.5'/%3E%3Cpath d='M10 20 L90 20' stroke='%2300ff00' stroke-width='0.5'/%3E%3Cpath d='M10 30 L90 30' stroke='%2300ff00' stroke-width='0.5'/%3E%3Cpath d='M10 40 L90 40' stroke='%2300ff00' stroke-width='0.5'/%3E%3Cpath d='M10 50 L90 50' stroke='%2300ff00' stroke-width='0.5'/%3E%3Cpath d='M10 60 L90 60' stroke='%2300ff00' stroke-width='0.5'/%3E%3Cpath d='M10 70 L90 70' stroke='%2300ff00' stroke-width='0.5'/%3E%3Cpath d='M10 80 L90 80' stroke='%2300ff00' stroke-width='0.5'/%3E%3Cpath d='M10 90 L90 90' stroke='%2300ff00' stroke-width='0.5'/%3E%3C/svg%3E");
+    opacity: 0.1;
+    pointer-events: none;
+    z-index: 10;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0.05) 50%,
+            rgba(0, 0, 0, 0.1) 100%
+        ),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 11;
+}
+
+#boot-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    text-align: center;
+    padding: 2rem;
+}
+
+.boot-text {
+    font-size: 3rem;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.1rem;
+    margin-bottom: 1rem;
+    animation: blink 1s infinite;
+    text-shadow: 0 0 5px var(--text-color);
+}
+
+.boot-prompt {
+    font-size: 1.5rem;
+    font-family: 'Courier New', monospace;
+    opacity: 0.7;
+    animation: pulse 2s infinite;
+}
+
+#main-archive {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    position: relative;
+}
+
+.hidden {
+    display: none;
+}
+
+.archive-header {
+    margin-bottom: 3rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.archive-nav {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.archive-nav a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+    position: relative;
+    padding: 0.5rem 0;
+    transition: all 0.3s ease;
+}
+
+.archive-nav a:hover {
+    color: var(--accent-color);
+}
+
+.archive-nav a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--accent-color);
+    transition: width 0.3s ease;
+}
+
+.archive-nav a:hover::after {
+    width: 100%;
+}
+
+.archive-section {
+    margin-bottom: 4rem;
+    padding: 2rem;
+    background-color: var(--panel-color);
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.archive-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--scanline-overlay);
+    pointer-events: none;
+    opacity: 0.3;
+    z-index: 5;
+}
+
+.archive-section h2 {
+    font-family: 'Courier New', monospace;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+    position: relative;
+    display: inline-block;
+    padding-bottom: 0.5rem;
+}
+
+.archive-section h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
+.profile-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    font-family: 'Courier New', monospace;
+}
+
+.profile-content p {
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-left: 2px solid var(--text-color);
+}
+
+.case-files-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.case-file {
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.case-file:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+}
+
+.case-file h3 {
+    font-family: 'Courier New', monospace;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.case-tag {
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    padding: 0.2rem 0.5rem;
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.dossier-note {
+    font-family: 'Courier New', monospace;
+    font-style: italic;
+    color: var(--secondary-color);
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: rgba(255, 182, 193, 0.1);
+    border-left: 3px solid var(--secondary-color);
+    font-size: 1.1rem;
+}
+
+.skills-list, .tools-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.skills-list span, .tools-list span {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+}
+
+.skills-list span:hover, .tools-list span:hover {
+    border-color: var(--text-color);
+    background-color: rgba(0, 255, 0, 0.1);
+}
+
+.transmission-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.transmission-info div {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    text-align: center;
+}
+
+.transmission-info label {
+    display: block;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.transmission-info value {
+    display: block;
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.caps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.cap {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.cap:hover {
+    border-color: var(--text-color);
+    transform: translateY(-3px);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+}
+
+.cap h3 {
+    font-family: 'Courier New', monospace;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cap p {
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Glitch effects */
+@keyframes glitch {
+    0% {
+        transform: translate(0);
+    }
+    20% {
+        transform: translate(-2px, 2px);
+    }
+    40% {
+        transform: translate(-2px, -2px);
+    }
+    60% {
+        transform: translate(2px, 2px);
+    }
+    80% {
+        transform: translate(2px, -2px);
+    }
+    100% {
+        transform: translate(0);
+    }
+}
+
+.glitch {
+    animation: glitch 0.3s infinite;
+    cursor: pointer;
+}
+
+/* Scanline animation */
+@keyframes scanline {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 0 100%;
+    }
+}
+
+.scanline-animation {
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.1) 2px,
+        rgba(0, 0, 0, 0.1) 4px
+    );
+    background-size: 100% 4px;
+    animation: scanline 4s linear infinite;
+}
+
+/* Static noise */
+@keyframes static {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 100% 100%;
+    }
+}
+
+.static-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    animation: static 0.5s steps(1) infinite;
+    opacity: 0.02;
+}
+
+/* Text animations */
+@keyframes blink {
+    0%, 50% {
+        opacity: 1;
+    }
+    51%, 100% {
+        opacity: 0;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.7;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .archive-nav {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .archive-section {
+        padding: 1.5rem;
+    }
+    
+    .boot-text {
+        font-size: 2rem;
+    }
+    
+    .boot-prompt {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .archive-nav a {
+        font-size: 1rem;
+    }
+    
+    .archive-section h2 {
+        font-size: 1.5rem;
+    }
+    
+    .profile-content,
+    .case-files-grid,
+    .transmission-info,
+    .caps-grid {
+        grid-template-columns: 1fr;
+    }
+}
